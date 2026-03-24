@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'weather_station',
 ]
 
 MIDDLEWARE = [
@@ -72,13 +73,35 @@ WSGI_APPLICATION = 'iot_app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+from decouple import config
 
+USE_LOCAL_DB = config('USE_LOCAL_DB', default=False, cast=bool)
+
+if USE_LOCAL_DB:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('LOCAL_DB_NAME'),
+            'USER': config('LOCAL_DB_USER'),
+            'PASSWORD': config('LOCAL_DB_PASSWORD'),
+            'HOST': config('LOCAL_DB_HOST'),
+            'PORT': config('LOCAL_DB_PORT'),
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT'),
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
