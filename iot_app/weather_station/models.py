@@ -4,7 +4,7 @@ from django.db import models
 class SensorData(models.Model):
     name = models.CharField(max_length=50)
     timestamp = models.DateTimeField(auto_now_add=True)
-    temperature = models.FloatField()
+    temperature = models.FloatField(default=0.0)
     humidity = models.FloatField()
     pressure = models.FloatField()
 
